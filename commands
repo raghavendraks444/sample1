@@ -1,0 +1,297 @@
+sudo docker run -d --name jaeger   -e COLLECTOR_ZIPKIN_HOST_PORT=:9412   -p 16686:16686   -p 9412:9412   jaegertracing/all-in-one:1.22
+
+sudo openvpn --config raghavendra.ovpn
+
+http://localhost:8080/ping  - go service endpoint 
+
+http://localhost:16686/search - jaeger ui
+
+ssh ubuntu@192.168.101.237	- TC1 FREE5GC 
+ssh ubuntu@192.168.101.233     - AMCOP -KDDI- Management plane
+ssh ubuntu@192.168.101.234     - TC2 UERANSIM-DN
+
+http://192.168.101.237:31030/ -free5gc ui tc1 
+
+http://192.168.101.237:16686/search -jaeger vm ui tc1 
+
+
+http://192.168.101.233:31030/ -free5gc ui AMCOP VM
+
+http://192.168.101.233:16686/search -jaeger vm ui AMCOP VM
+
+free5gc tc1 - tcpdump -i any src 10.1.0.1   101-fresh ip assigned, next 102
+
+    git clone --recursive -b v3.0.3 -j `nproc` https://github.com/free5gc/free5gc.git
+
+
+FROM  towards5gs/free5gc-pcf:v3.0.6
+
+COPY ./free5gc/bin/pcf /free5gc/pcf
+
+RUN chmod +x /free5gc/pcf/pcf
+
+FROM  towards5gs/free5gc-nrf:v3.0.6
+
+COPY ./free5gc/bin/nrf /free5gc/nrf
+
+RUN chmod +x /free5gc/nrf/nrf
+~                              
+steps to be followed every time
+
+1-make (compile evry time)
+
+2-build docker images
+
+3-edit deployment
+
+for e3e floe b/w ueran and free5gc 
+
+go inside ue pod inn tTC1 - kubectl exec -it ue bash
+
+go inside upf pod ,type ifconfig, see interface added 
+do tcpdump -i src 10.1.0.3 PDUADDRESS
+
+"github.com/free5gc/nrf/internal/logger"
+"github.com/free5gc/nrf/internal/util"
+nrf_service "github.com/free5gc/nrf/pkg/service"
+"github.com/free5gc/util/version"
+
+
+   13   14.55
+   
+   COPY ./free5gc/config/nrfcfg.yaml /free5gc/config/
+
+NRF Run Error: Failed to initialize
+kubectl get pod -o yaml
+
+source ~/.bashrc
+make
+sudo make install
+
+source ~/.bashrc
+   sudo apt-get -y install build-essential
+   cmake ..
+   make -j`nproc`
+   
+How do I Update the configuration of gnb such as tac... Baically I update the configurations after
+   
+   //      carrier := propagation.MapCarrier{}
+//      propgator.Inject(ctx, carrier)
+//      // This carrier is sent accross the process
+//      fmt.Println(carrier)
+////
+////    // Extract the context and start new span as child in the receiving function
+//      parentCtx := propgator.Extract(ctx, carrier)
+//      _, childSpan := tp.Tracer("foo").Start(parentCtx, "child-span-name")
+//      childSpan.AddEvent("dummy-event")
+//        defer childSpan.End()
+
+// use zipkin exporter
+	exporter, err = zipkin.New("http://zipkin:9411/api/v2/spans")
+	if err != nil {
+		panic(err)
+	}
+
+	// use jaeger exporter
+	exporter, err = jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint("http://jaeger:14268/api/traces")))
+	if err != nil {
+		panic(err)
+	}
+	
+	
+grep -inr "router := " ./
+grep -inr "*gin.Context" ./
+grep -inr "httpwrapper.NewReq" .
+
+
+
+ctx, childSpan := tracer.Start(ctx, "child")
+        defer childSpan.End()
+
+
+   2. Create a global tracer
+      var tracer = otel.Tracer("sample-name")
+
+   3. Create spans
+      tracer := otel.Tracer("sample-name")
+      ctx, span := tracer.Start(ctx, "main")
+      defer span.End()
+      
+      
+   sbi/managment/routers.go
+   
+   
+"go.opentelemetry.io/otel/attribute"
+"go.opentelemetry.io/otel/trace"
+"go.opentelemetry.io/otel/propagation"
+"go.opentelemetry.io/otel"
+   
+span := trace.SpanFromContext(c.Request.Context())
+span.SetAttributes(attribute.String("nrf", "otel"))
+span.AddEvent("This is a sample event", trace.WithAttributes(attribute.Int("pid", 4328), attribute.String("sampleAttribute", "Test")))
+
+
+kubectl create configmap nrf-configmap2 --from-file=nrfcfg.yaml
+
+
+
+
+ctx := c.Request.Context()
+span := trace.SpanFromContext(ctx)
+span.SetAttributes(attribute.String("nrf", "otel"))
+span.AddEvent("This is a sample event", trace.WithAttributes(attribute.Int("pid", 123), attribute.String("sampleAttribute", "Test")))
+defer span.End()
+
+//Inject
+	syncReq, _ := http.NewRequest("GET", "http://localhost:8080/service", nil)
+	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(syncReq.Header))
+
+	if _, err := http.DefaultClient.Do(syncReq); err != nil {
+		span.RecordError(err)
+		span.SetAttributes(attribute.String("service error", err.Error()))
+	}
+
+
+//extract
+ctx := c.Request.Context()
+span := trace.SpanFromContext(otel.GetTextMapPropagator().Extract(ctx, propagation.HeaderCarrier(c.Request.Header)))
+defer span.End()
+
+span := trace.SpanFromContext(ctx)
+
+//inject
+otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
+
+
+
+no ueransim pods should be running 
+then add subsriber from free5gc ui, it will be empty
+then add install ueransim via helm it will show connected
+
+otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
+
+
+grep -inr "httpwrapper.NewRequest" .
+
+
+scp -i yogen/ypal-key -r rks/docker-compose ubuntu@192.168.101.233:/home/ubuntu/free5gc
+
+
+if _, err := http.DefaultClient.Do(syncReq); err != nil {
+                span.RecordError(err)
+                span.SetAttributes(attribute.String(" /service error", err.Error()))
+        }
+
+
+   NFInstancesStoreApi.SearchNFInstances
+   
+   
+       // after request creation
+       tracer := otel.Tracer("sample-name")
+       new_ctx, span := tracer.Start(ctx, "HTTPAccessTokenRequest")
+       defer span.End()
+       otel.GetTextMapPropagator().Inject(new_ctx, propagation.HeaderCarrier(req.Header))
+       
+       
+       
+       "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	router.Use(otelgin.Middleware("UDR"))
+	
+	grep below linw 
+
+
+
+"go.opentelemetry.io/otel/attribute"
+"go.opentelemetry.io/otel/trace"
+"go.opentelemetry.io/otel/propagation"
+"go.opentelemetry.io/otel"
+
+step 1 add otelgin . make routers to use otelgin 
+
+grep -inr "httpwrapper.NewRequest" .	
+
+for each funcriton conatinig above line extarct context headers step 2
+
+ctx := c.Request.Context()
+span := trace.SpanFromContext(otel.GetTextMapPropagator().Extract(ctx, propagation.HeaderCarrier(c.Request.Header)))
+span.AddEvent("This is ", trace.WithAttributes(attribute.Int("pid", 123), attribute.String("sampleAttribute", "Test")))
+defer span.End()
+
+// after request creation
+tracer := otel.Tracer("PCF")
+new_ctx, span := tracer.Start(ctx, "HTTPdergisternfinstance")
+defer span.End()
+otel.GetTextMapPropagator().Inject(new_ctx, propagation.HeaderCarrier(req.Header))
+
+        httpResponse := producer.HandleNFDeregisterRequest(req, new_ctx)
+
+
+tracer := otel.Tracer("PCF")
+new_ctx, span := tracer.Start(ctx, "")
+defer span.End()
+
+
+whereever there is request add 
+ctx cont.Context
+
+ctx context.Context
+
+
+
+"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+
+        router.Use(otelgin.Middleware("GIN"))
+
+sudo docker stop $(sudo docker ps -a -q)
+sudo docker rm $(sudo docker ps -a -q)
+
+
+Post "https://192.168.101.233:14278/api/traces": http: server gave HTTP response to HTTPS client
+
+
+ "time"
+//      "go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+        "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+
+        "google.golang.org/grpc"
+        "google.golang.org/grpc/credentials/insecure"
+        sdktrace "go.opentelemetry.io/otel/sdk/trace"
+        "go.opentelemetry.io/otel"
+//      "go.opentelemetry.io/otel/exporters/jaeger"
+        "go.opentelemetry.io/otel/propagation"
+        "go.opentelemetry.io/otel/sdk/resource"
+//      tracesdk "go.opentelemetry.io/otel/sdk/trace"
+        semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+
+
+ifconfig 
+
+1st step 
+git clone https://gitlab.com/aarna-networks/aarna-stream.git
+cd aarna-stream/util-scripts
+
+./create_qem_vm.sh
+
+disk size = 10gb
+cpus = 3
+ram =3 
+
+visrh list
+route -n 
+
+4cpu-
+4gb -ram 
+40gb -disk space
+
+ip route get 8.8.8.8 | sed -n 's/.*dev \([^\ ]*\).*/\1/p'
+ip route get 8.8.8.8 | head -n1 | awk '{print $5}'
+
+download zip folder
+
+unzip using apt-get install unzip
+scp -r free5gc-20221212T121609Z-001.zip ubuntu@192.168.122.148:
+ virsh domifaddr kddi
+
+tar -xvzf
+
+git add * :/
